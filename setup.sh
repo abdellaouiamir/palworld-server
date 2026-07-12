@@ -8,10 +8,16 @@ if [[ ! -d "$DEST" ]]; then
     exit 1
 fi
 
-if [[ -d "$DEST/.steam" ]]; then
-    SRC_DIR="."
+# Run the update first: downloads the server via steamcmd. This also creates
+# ~/.steam, so the variant check below reflects the real installation.
+bash palworld-update.sh
+ln -sfn $DEST/.steam/steam/steamcmd/linux32 "$DEST/.steam/sdk32"
+ln -sfn $DEST/.steam/steam/steamcmd/linux64 "$DEST/.steam/sdk64"
+
+if [[ -d "$DEST/Steam" ]]; then
+    SRC_DIR="./no.steam"    
 else
-    SRC_DIR="./no.steam"
+    SRC_DIR="."
 fi
 
 cp \
@@ -22,8 +28,3 @@ cp \
     "$DEST/"
 
 chmod +x "$DEST"/*.sh
-
-# Steam SDK symlinks: game servers look for steamclient.so in ~/.steam/sdk{32,64}
-mkdir -p "$DEST/.steam"
-ln -sfn steam/steamcmd/linux32 "$DEST/.steam/sdk32"
-ln -sfn steam/steamcmd/linux64 "$DEST/.steam/sdk64"
