@@ -22,3 +22,8 @@ cp \
     "$DEST/"
 
 chmod +x "$DEST"/*.sh
+
+# Steam SDK symlinks: game servers look for steamclient.so in ~/.steam/sdk{32,64}
+mkdir -p "$DEST/.steam"
+ln -sfn steam/steamcmd/linux32 "$DEST/.steam/sdk32"
+ln -sfn steam/steamcmd/linux64 "$DEST/.steam/sdk64"
