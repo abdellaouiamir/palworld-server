@@ -34,8 +34,8 @@ journalctl -u palworld -f      # follow the live logs
 | File | Purpose |
 |---|---|
 | `install.sh` | One-shot installer: user, dependencies, clone, setup, service |
-| `setup.sh` | Copies the scripts and service file into `/home/steam` (picks the right variant depending on whether `~/.steam` exists) |
-| `palworld-update.sh` | Updates the server via SteamCMD — runs automatically before every service start |
+| `setup.sh` | Copies the scripts and service file into `/home/steam` |
+| `palworld-update.sh` | Installs/updates the server via SteamCMD into `/home/steam/palserver` — runs automatically before every service start |
 | `palworld-backup.sh` | Archives the save data to `/home/steam/Palworld_backups/` and deletes backups older than 10 days — runs automatically when the service stops |
 | `palworld-restore.sh` | Restores a chosen backup archive |
 | `palworld.service` | systemd unit: auto-restart, update on start, backup on stop, restarts the server every 12 hours |
@@ -80,12 +80,22 @@ sudo systemctl restart palworld    # triggers a backup, then an update
 Edit the Palworld settings file (server name, password, player limits, etc.):
 
 ```
-/home/steam/.steam/steam/steamapps/common/PalServer/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
+/home/steam/palserver/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini
 ```
 
 Restart the service after changing it.
 
 ## Notes
+
+- **Upgrading from an older version of these scripts?** The server now installs to `/home/steam/palserver` instead of the SteamCMD default location. To keep your world, migrate the save data once:
+
+```bash
+sudo systemctl stop palworld
+sudo -u steam /home/steam/palworld-update.sh   # downloads the server to the new path
+sudo -u steam cp -r /home/steam/.steam/steam/steamapps/common/PalServer/Pal/Saved /home/steam/palserver/Pal/ 2>/dev/null \
+  || sudo -u steam cp -r /home/steam/Steam/steamapps/common/PalServer/Pal/Saved /home/steam/palserver/Pal/
+sudo systemctl start palworld
+```
 
 - The service restarts the server every 12 hours (`RuntimeMaxSec=12h`) to work around memory leaks — players are disconnected without warning when this happens.
 - Default ports: `8211/udp` (game) and `27015/udp` (query). Open them in your firewall:

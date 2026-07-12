@@ -3,28 +3,28 @@ set -euo pipefail
 
 DEST="/home/steam"
 
+if [[ "$(whoami)" != "steam" ]]; then
+    echo "Error: run this script as the steam user (sudo -u steam ./setup.sh)" >&2
+    exit 1
+fi
+
 if [[ ! -d "$DEST" ]]; then
     echo "Error: $DEST does not exist." >&2
     exit 1
 fi
 
-# Run the update first: downloads the server via steamcmd. This also creates
-# ~/.steam, so the variant check below reflects the real installation.
-bash palworld-update.sh
-ln -sfn $DEST/.steam/steam/steamcmd/linux32 "$DEST/.steam/sdk32"
-ln -sfn $DEST/.steam/steam/steamcmd/linux64 "$DEST/.steam/sdk64"
-
-if [[ -d "$DEST/Steam" ]]; then
-    SRC_DIR="./no.steam"    
-else
-    SRC_DIR="."
-fi
-
 cp \
-    "$SRC_DIR/palworld-backup.sh" \
-    "$SRC_DIR/palworld.service" \
+    "palworld-backup.sh" \
+    "palworld.service" \
     "palworld-update.sh" \
     "palworld-restore.sh" \
     "$DEST/"
 
 chmod +x "$DEST"/*.sh
+
+# Install/update the server via steamcmd into /home/steam/palserver.
+bash palworld-update.sh
+
+# Steam SDK symlinks: game servers look for steamclient.so in ~/.steam/sdk{32,64}
+ln -sfn "$DEST/.local/share/Steam/steamcmd/linux32" "$DEST/.steam/sdk32"
+ln -sfn "$DEST/.local/share/Steam/steamcmd/linux64" "$DEST/.steam/sdk64"

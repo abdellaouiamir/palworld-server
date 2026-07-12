@@ -7,16 +7,12 @@ After=network-online.target
 User=steam
 Group=steam
 TimeoutStartSec=infinity
-Environment="templdpath=$LD_LIBRARY_PATH"
-Environment="LD_LIBRARY_PATH=/home/steam/:$LD_LIBRARY_PATH"
-Environment="SteamAppId=2394010"
 ExecStartPre=/home/steam/palworld-update.sh
-ExecStart=/home/steam/.steam/steam/steamapps/common/PalServer/PalServer.sh -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS
+ExecStart=/home/steam/palserver/PalServer.sh -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS
 ExecStopPost=/home/steam/palworld-backup.sh
 Restart=always
 RuntimeMaxSec=12h
 LimitCORE=0
-
 
 [Install]
 WantedBy=multi-user.target
