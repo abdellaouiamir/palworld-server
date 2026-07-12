@@ -20,3 +20,5 @@ cp \
     "palworld-update.sh" \
     "palworld-restore.sh" \
     "$DEST/"
+
+chmod +x "$DEST"/*.sh
