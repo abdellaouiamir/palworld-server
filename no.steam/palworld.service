@@ -6,6 +6,7 @@ After=network-online.target
 [Service]
 User=steam
 Group=steam
+TimeoutStartSec=infinity
 Environment="templdpath=$LD_LIBRARY_PATH"
 Environment="LD_LIBRARY_PATH=/home/steam/:$LD_LIBRARY_PATH"
 Environment="SteamAppId=2394010"
