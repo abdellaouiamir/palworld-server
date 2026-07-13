@@ -17,10 +17,10 @@ This will:
 1. Install `git` and `steamcmd` if they are missing (accepting the Steam license non-interactively)
 2. Create a `steam` user with a home directory at `/home/steam`
 3. Clone this repository into `/home/steam/palworld-server`
-4. Run `setup.sh`, which copies the right scripts for your setup into `/home/steam`
+4. Run `setup.sh`, which copies the scripts into `/home/steam`, downloads the Palworld server (~8 GB) via SteamCMD, and sets up the Steam SDK symlinks
 5. Install and start the `palworld` systemd service
 
-The first start downloads the Palworld server (~8 GB) via SteamCMD, so give it a few minutes.
+The server download happens during setup, so the install can take a few minutes depending on your connection.
 
 ## Checking the server
 
@@ -39,6 +39,7 @@ journalctl -u palworld -f      # follow the live logs
 | `palworld-backup.sh` | Archives the save data to `/home/steam/Palworld_backups/` and deletes backups older than 10 days — runs automatically when the service stops |
 | `palworld-restore.sh` | Restores a chosen backup archive |
 | `palworld.service` | systemd unit: auto-restart, update on start, backup on stop, restarts the server every 12 hours |
+| `uninstall.sh` | Removes the service, scripts, and server files — asks before touching backups or the `steam` user |
 
 ## Common operations
 
@@ -84,6 +85,17 @@ Edit the Palworld settings file (server name, password, player limits, etc.):
 ```
 
 Restart the service after changing it.
+
+## Uninstall
+
+```bash
+cd /home/steam/palworld-server
+sudo bash uninstall.sh
+```
+
+This stops and removes the systemd service (taking one final automatic backup in the process), then deletes the scripts, the cloned repo, and the server files. It will **ask for confirmation** before deleting your backups (world saves) or the `steam` user — both are kept by default, so your data survives a reinstall.
+
+`steamcmd` and `git` are left installed; remove them with `sudo apt-get remove steamcmd` if you no longer need them.
 
 ## Notes
 
